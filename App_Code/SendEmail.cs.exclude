@@ -1,0 +1,56 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Configuration;
+using System.IO;
+using System.Threading;
+using System.Windows.Forms;
+using System.Threading.Tasks;
+
+/// <summary>
+/// Summary description for SendEmail
+/// </summary>
+public class Form1 : Form
+{
+    int _count;
+
+    void ButtonClick(object sender, EventArgs e)
+    {
+        ThreadWorker worker = new ThreadWorker();
+        worker.ThreadDone += HandleThreadDone;
+
+        Thread thread1 = new Thread(worker.Run);
+        thread1.Start();
+
+        _count = 1;
+    }
+
+    void HandleThreadDone(object sender, EventArgs e)
+    {
+        // You should get the idea this is just an example
+        if (_count == 1)
+        {
+            ThreadWorker worker = new ThreadWorker();
+            worker.ThreadDone += HandleThreadDone;
+
+            Thread thread2 = new Thread(worker.Run);
+            thread2.Start();
+
+            _count++;
+        }
+    }
+
+    class ThreadWorker
+    {
+        public event EventHandler ThreadDone;
+
+        public void Run()
+        {
+            // Do a task
+
+            if (ThreadDone != null)
+                ThreadDone(this, EventArgs.Empty);
+        }
+    }
+}
